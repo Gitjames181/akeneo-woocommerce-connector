@@ -20,7 +20,4 @@ A robust, production-ready connector for synchronizing product data between Aken
 
 ## Installation
 
-### 1. Install via Composer
-
-```bash
-composer require mugfulmuse/akeneo-woocommerce-connector
+** Coming Soon **
