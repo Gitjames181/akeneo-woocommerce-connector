@@ -1,5 +1,4 @@
 <?php
-// src/MugfulMuse/WooCommerceConnectorBundle/Form/Extension/MenuExtension.php
 namespace MugfulMuse\WooCommerceConnectorBundle\Form\Extension;
 
 use Symfony\Component\Form\AbstractTypeExtension;
