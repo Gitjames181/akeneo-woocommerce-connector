@@ -38,8 +38,8 @@ class MenuExtension extends AbstractTypeExtension
     /**
      * {@inheritdoc}
      */
-    public function getExtendedType()
+    public static function getExtendedTypes(): iterable
     {
-        return 'pim_menu';
+        return ['pim_menu'];
     }
 }
