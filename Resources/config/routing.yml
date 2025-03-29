@@ -1,0 +1,37 @@
+# src/MugfulMuse/WooCommerceConnectorBundle/Resources/config/routing.yml
+mugfulmuse_woocommerce_connector_dashboard:
+    path: /woocommerce
+    defaults: { _controller: mugfulmuse_woocommerce_connector.controller.woo_connector:dashboardAction }
+
+mugfulmuse_woocommerce_connector_test_connection:
+    path: /woocommerce/test-connection
+    defaults: { _controller: mugfulmuse_woocommerce_connector.controller.woo_connector:testConnectionAction }
+    methods: [POST]
+
+mugfulmuse_woocommerce_connector_save_settings:
+    path: /woocommerce/save-settings
+    defaults: { _controller: mugfulmuse_woocommerce_connector.controller.woo_connector:saveSettingsAction }
+    methods: [POST]
+
+mugfulmuse_woocommerce_connector_push:
+    path: /woocommerce/push
+    defaults: { _controller: mugfulmuse_woocommerce_connector.controller.woo_connector:pushAction }
+    methods: [POST]
+
+mugfulmuse_woocommerce_connector_pull:
+    path: /woocommerce/pull
+    defaults: { _controller: mugfulmuse_woocommerce_connector.controller.woo_connector:pullAction }
+    methods: [POST]
+
+mugfulmuse_woocommerce_connector_mapping_index:
+    path: /woocommerce/mapping
+    defaults: { _controller: mugfulmuse_woocommerce_connector.controller.woo_connector:mappingIndexAction }
+
+mugfulmuse_woocommerce_connector_mapping_save:
+    path: /woocommerce/mapping/save
+    defaults: { _controller: mugfulmuse_woocommerce_connector.controller.woo_connector:mappingSaveAction }
+    methods: [POST]
+
+mugfulmuse_woocommerce_connector_history:
+    path: /woocommerce/history
+    defaults: { _controller: mugfulmuse_woocommerce_connector.controller.woo_connector:historyAction }

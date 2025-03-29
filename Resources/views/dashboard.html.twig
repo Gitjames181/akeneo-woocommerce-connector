@@ -1,0 +1,404 @@
+{# src/MugfulMuse/WooCommerceConnectorBundle/Resources/views/dashboard.html.twig #}
+{% extends 'PimEnterpriseEnrichBundle::layout.html.twig' %}
+
+{% block content %}
+    <div class="AknTitleContainer">
+        <div class="AknTitleContainer-title">
+            {{ 'mugfulmuse_woocommerce.dashboard.title'|trans }}
+        </div>
+    </div>
+
+    <div class="AknInfoBlock connector-info">
+        <div class="AknInfoBlock-header">
+            <div class="AknInfoBlock-title">{{ 'mugfulmuse_woocommerce.dashboard.connection.title'|trans }}</div>
+        </div>
+        <div class="AknInfoBlock-content">
+            <div class="AknFormContainer">
+                <div class="AknFieldContainer">
+                    <div class="AknFieldContainer-header">
+                        <label class="AknFieldContainer-label" for="store_url">
+                            {{ 'mugfulmuse_woocommerce.settings.store_url'|trans }}
+                        </label>
+                    </div>
+                    <div class="AknFieldContainer-inputContainer">
+                        <input type="text" id="store_url" name="store_url" class="AknTextField" value="{{ settings.store_url|default('') }}" />
+                    </div>
+                </div>
+
+                <div class="AknFieldContainer">
+                    <div class="AknFieldContainer-header">
+                        <label class="AknFieldContainer-label" for="consumer_key">
+                            {{ 'mugfulmuse_woocommerce.settings.consumer_key'|trans }}
+                        </label>
+                    </div>
+                    <div class="AknFieldContainer-inputContainer">
+                        <input type="text" id="consumer_key" name="consumer_key" class="AknTextField" value="{{ settings.consumer_key|default('') }}" />
+                    </div>
+                </div>
+
+                <div class="AknFieldContainer">
+                    <div class="AknFieldContainer-header">
+                        <label class="AknFieldContainer-label" for="consumer_secret">
+                            {{ 'mugfulmuse_woocommerce.settings.consumer_secret'|trans }}
+                        </label>
+                    </div>
+                    <div class="AknFieldContainer-inputContainer">
+                        <input type="text" id="consumer_secret" name="consumer_secret" class="AknTextField" value="{{ settings.consumer_secret|default('') }}" />
+                    </div>
+                </div>
+
+                <div class="AknButtonContainer">
+                    <button type="button" class="AknButton AknButton--apply" id="test-connection">
+                        {{ 'mugfulmuse_woocommerce.dashboard.connection.test'|trans }}
+                    </button>
+                    <button type="button" class="AknButton AknButton--apply" id="save-settings">
+                        {{ 'pim_common.save'|trans }}
+                    </button>
+                </div>
+
+                <div id="connection-result" class="AknMessageBox AknMessageBox--hide"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="AknInfoBlock sync-actions">
+        <div class="AknInfoBlock-header">
+            <div class="AknInfoBlock-title">{{ 'mugfulmuse_woocommerce.dashboard.actions.title'|trans }}</div>
+        </div>
+        <div class="AknInfoBlock-content">
+            <div class="AknButtonList">
+                <div class="AknButtonList-item">
+                    <div class="AknButton AknButton--important" id="push-button" {% if not settings.store_url %}disabled{% endif %}>
+                        <i class="AknButton-icon icon-arrow-right"></i>
+                        {{ 'mugfulmuse_woocommerce.dashboard.actions.push'|trans }}
+                    </div>
+                </div>
+                <div class="AknButtonList-item">
+                    <div class="AknButton AknButton--important" id="pull-button" {% if not settings.store_url %}disabled{% endif %}>
+                        <i class="AknButton-icon icon-arrow-left"></i>
+                        {{ 'mugfulmuse_woocommerce.dashboard.actions.pull'|trans }}
+                    </div>
+                </div>
+            </div>
+            <div class="AknInfoBlock-link">
+                <a href="{{ path('mugfulmuse_woocommerce_connector_mapping_index') }}">
+                    {{ 'mugfulmuse_woocommerce.dashboard.actions.configure_mapping'|trans }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="AknInfoBlock sync-history">
+        <div class="AknInfoBlock-header">
+            <div class="AknInfoBlock-title">{{ 'mugfulmuse_woocommerce.dashboard.history.title'|trans }}</div>
+        </div>
+        <div class="AknInfoBlock-content">
+            <div id="sync-history-container">
+                <div class="AknLoadingMask loading-mask"></div>
+            </div>
+            <div class="AknInfoBlock-link">
+                <a href="{{ path('mugfulmuse_woocommerce_connector_history') }}">
+                    {{ 'mugfulmuse_woocommerce.dashboard.history.view_all'|trans }}
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="push-confirm-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">{{ 'mugfulmuse_woocommerce.push.confirm.title'|trans }}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{{ 'mugfulmuse_woocommerce.push.confirm.message'|trans }}</p>
+                    <div class="push-options">
+                        <div class="AknFieldContainer">
+                            <div class="AknFieldContainer-header">
+                                <label class="AknFieldContainer-label" for="push-filter-updated">
+                                    {{ 'mugfulmuse_woocommerce.push.confirm.filter_updated'|trans }}
+                                </label>
+                            </div>
+                            <div class="AknFieldContainer-inputContainer">
+                                <input type="checkbox" id="push-filter-updated" name="push-filter-updated" class="AknCheckbox" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="AknButton AknButton--apply" id="confirm-push">
+                        {{ 'mugfulmuse_woocommerce.push.confirm.button'|trans }}
+                    </button>
+                    <button type="button" class="AknButton AknButton--secondary" data-dismiss="modal">
+                        {{ 'pim_common.cancel'|trans }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="pull-confirm-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">{{ 'mugfulmuse_woocommerce.pull.confirm.title'|trans }}</h4>
+                </div>
+                <div class="modal-body">
+                    <p>{{ 'mugfulmuse_woocommerce.pull.confirm.message'|trans }}</p>
+                    <div class="pull-options">
+                        <div class="AknFieldContainer">
+                            <div class="AknFieldContainer-header">
+                                <label class="AknFieldContainer-label" for="pull-filter-updated">
+                                    {{ 'mugfulmuse_woocommerce.pull.confirm.filter_updated'|trans }}
+                                </label>
+                            </div>
+                            <div class="AknFieldContainer-inputContainer">
+                                <input type="checkbox" id="pull-filter-updated" name="pull-filter-updated" class="AknCheckbox" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="AknButton AknButton--apply" id="confirm-pull">
+                        {{ 'mugfulmuse_woocommerce.pull.confirm.button'|trans }}
+                    </button>
+                    <button type="button" class="AknButton AknButton--secondary" data-dismiss="modal">
+                        {{ 'pim_common.cancel'|trans }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="sync-result-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">{{ 'mugfulmuse_woocommerce.sync.result.title'|trans }}</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="sync-result-content"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="AknButton AknButton--apply" data-dismiss="modal">
+                        {{ 'pim_common.close'|trans }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    {{ parent() }}
+    <script type="text/javascript">
+        require(
+            ['jquery', 'routing', 'pim/dialog'],
+            function ($, Routing, Dialog) {
+                $(function () {
+                    // Test Connection
+                    $('#test-connection').on('click', function () {
+                        var storeUrl = $('#store_url').val();
+                        var consumerKey = $('#consumer_key').val();
+                        var consumerSecret = $('#consumer_secret').val();
+                        
+                        if (!storeUrl || !consumerKey || !consumerSecret) {
+                            $('#connection-result')
+                                .removeClass('AknMessageBox--hide AknMessageBox--success')
+                                .addClass('AknMessageBox--error')
+                                .html('{{ 'mugfulmuse_woocommerce.connection.missing_credentials'|trans }}');
+                            return;
+                        }
+                        
+                        Dialog.showLoading();
+                        
+                        $.ajax({
+                            url: Routing.generate('mugfulmuse_woocommerce_connector_test_connection'),
+                            type: 'POST',
+                            data: {
+                                store_url: storeUrl,
+                                consumer_key: consumerKey,
+                                consumer_secret: consumerSecret
+                            },
+                            success: function (response) {
+                                Dialog.hideLoading();
+                                
+                                if (response.success) {
+                                    $('#connection-result')
+                                        .removeClass('AknMessageBox--hide AknMessageBox--error')
+                                        .addClass('AknMessageBox--success')
+                                        .html(response.message);
+                                    
+                                    // Enable push/pull buttons
+                                    $('#push-button, #pull-button').prop('disabled', false);
+                                } else {
+                                    $('#connection-result')
+                                        .removeClass('AknMessageBox--hide AknMessageBox--success')
+                                        .addClass('AknMessageBox--error')
+                                        .html(response.message);
+                                }
+                            },
+                            error: function () {
+                                Dialog.hideLoading();
+                                
+                                $('#connection-result')
+                                    .removeClass('AknMessageBox--hide AknMessageBox--success')
+                                    .addClass('AknMessageBox--error')
+                                    .html('{{ 'mugfulmuse_woocommerce.connection.error'|trans }}');
+                            }
+                        });
+                    });
+                    
+                    // Save Settings
+                    $('#save-settings').on('click', function () {
+                        var storeUrl = $('#store_url').val();
+                        var consumerKey = $('#consumer_key').val();
+                        var consumerSecret = $('#consumer_secret').val();
+                        
+                        if (!storeUrl || !consumerKey || !consumerSecret) {
+                            $('#connection-result')
+                                .removeClass('AknMessageBox--hide AknMessageBox--success')
+                                .addClass('AknMessageBox--error')
+                                .html('{{ 'mugfulmuse_woocommerce.connection.missing_credentials'|trans }}');
+                            return;
+                        }
+                        
+                        Dialog.showLoading();
+                        
+                        $.ajax({
+                            url: Routing.generate('mugfulmuse_woocommerce_connector_save_settings'),
+                            type: 'POST',
+                            data: {
+                                store_url: storeUrl,
+                                consumer_key: consumerKey,
+                                consumer_secret: consumerSecret
+                            },
+                            success: function (response) {
+                                Dialog.hideLoading();
+                                Dialog.alert('{{ 'mugfulmuse_woocommerce.settings.success'|trans }}');
+                            },
+                            error: function () {
+                                Dialog.hideLoading();
+                                Dialog.alert('{{ 'mugfulmuse_woocommerce.settings.error'|trans }}');
+                            }
+                        });
+                    });
+                    
+                    // Push Button
+                    $('#push-button').on('click', function () {
+                        if ($(this).prop('disabled')) {
+                            return;
+                        }
+                        
+                        $('#push-confirm-modal').modal('show');
+                    });
+                    
+                    // Pull Button
+                    $('#pull-button').on('click', function () {
+                        if ($(this).prop('disabled')) {
+                            return;
+                        }
+                        
+                        $('#pull-confirm-modal').modal('show');
+                    });
+                    
+                    // Confirm Push
+                    $('#confirm-push').on('click', function () {
+                        var filters = {};
+                        
+                        if ($('#push-filter-updated').is(':checked')) {
+                            filters.updated = true;
+                        }
+                        
+                        $('#push-confirm-modal').modal('hide');
+                        Dialog.showLoading();
+                        
+                        $.ajax({
+                            url: Routing.generate('mugfulmuse_woocommerce_connector_push'),
+                            type: 'POST',
+                            data: {
+                                filters: filters
+                            },
+                            success: function (response) {
+                                Dialog.hideLoading();
+                                
+                                if (response.success) {
+                                    Dialog.alert(response.message);
+                                } else {
+                                    Dialog.alert(response.message, null, 'error');
+                                }
+                            },
+                            error: function () {
+                                Dialog.hideLoading();
+                                Dialog.alert('{{ 'mugfulmuse_woocommerce.push.error'|trans }}', null, 'error');
+                            }
+                        });
+                    });
+                    
+                    // Confirm Pull
+                    $('#confirm-pull').on('click', function () {
+                        var filters = {};
+                        
+                        if ($('#pull-filter-updated').is(':checked')) {
+                            filters.updated = true;
+                        }
+                        
+                        $('#pull-confirm-modal').modal('hide');
+                        Dialog.showLoading();
+                        
+                        $.ajax({
+                            url: Routing.generate('mugfulmuse_woocommerce_connector_pull'),
+                            type: 'POST',
+                            data: {
+                                filters: filters
+                            },
+                            success: function (response) {
+                                Dialog.hideLoading();
+                                
+                                if (response.success) {
+                                    Dialog.alert(response.message);
+                                } else {
+                                    Dialog.alert(response.message, null, 'error');
+                                }
+                            },
+                            error: function () {
+                                Dialog.hideLoading();
+                                Dialog.alert('{{ 'mugfulmuse_woocommerce.pull.error'|trans }}', null, 'error');
+                            }
+                        });
+                    });
+                    
+                    // Load Sync History
+                    function loadSyncHistory() {
+                        var $container = $('#sync-history-container');
+                        
+                        $.ajax({
+                            url: Routing.generate('mugfulmuse_woocommerce_connector_history_recent'),
+                            type: 'GET',
+                            success: function (response) {
+                                $container.html(response);
+                            },
+                            error: function () {
+                                $container.html('<div class="AknMessageBox AknMessageBox--error">{{ 'mugfulmuse_woocommerce.history.load_error'|trans }}</div>');
+                            }
+                        });
+                    }
+                    
+                    // Load sync history if settings exist
+                    if ($('#push-button').not(':disabled').length) {
+                        loadSyncHistory();
+                    }
+                });
+            }
+        );
+    </script>
+{% endblock %}
