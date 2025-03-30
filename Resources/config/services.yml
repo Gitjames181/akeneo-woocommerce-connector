@@ -8,7 +8,6 @@ services:
             - '%mugfulmuse_woocommerce_connector.consumer_secret%'
             - '@logger'
         public: true
-
     mugfulmuse_woocommerce_connector.service.sync_service:
         class: MugfulMuse\WooCommerceConnectorBundle\Service\SyncService
         arguments:
@@ -19,21 +18,18 @@ services:
             - '@doctrine.orm.entity_manager'
             - '@logger'
         public: true
-
     mugfulmuse_woocommerce_connector.repository.field_mapping:
         class: MugfulMuse\WooCommerceConnectorBundle\Repository\FieldMappingRepository
         factory: ['@doctrine.orm.entity_manager', getRepository]
         arguments:
             - MugfulMuse\WooCommerceConnectorBundle\Entity\FieldMapping
         public: true
-
     mugfulmuse_woocommerce_connector.repository.sync_history:
         class: MugfulMuse\WooCommerceConnectorBundle\Repository\SyncHistoryRepository
         factory: ['@doctrine.orm.entity_manager', getRepository]
         arguments:
             - MugfulMuse\WooCommerceConnectorBundle\Entity\SyncHistory
         public: true
-
     mugfulmuse_woocommerce_connector.controller.woo_connector:
         class: MugfulMuse\WooCommerceConnectorBundle\Controller\WooConnectorController
         arguments:
@@ -42,19 +38,18 @@ services:
             - '@templating'
             - '@translator'
         public: true
-
     mugfulmuse_woocommerce_connector.settings_manager:
         class: MugfulMuse\WooCommerceConnectorBundle\Service\SettingsManager
         arguments:
             - '@doctrine.orm.entity_manager'
             - '@logger'
         public: true
-
     mugfulmuse_woocommerce_connector.form.extension.menu:
         class: MugfulMuse\WooCommerceConnectorBundle\Form\Extension\MenuExtension
+        arguments:
+            - '@security.authorization_checker'
         tags:
-            - { name: form.type_extension, alias: pim_menu }
-
+            - { name: form.type_extension, extended_type: Akeneo\Platform\Bundle\UIBundle\Form\Type\NavigationMenuType }
 parameters:
     mugfulmuse_woocommerce_connector.store_url: ~
     mugfulmuse_woocommerce_connector.consumer_key: ~
